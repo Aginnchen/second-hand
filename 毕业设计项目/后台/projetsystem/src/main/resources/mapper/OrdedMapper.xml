@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dc.dao.OrdedDao">
+    <!--搜索-->
+    <select id="selectAllOrded" resultType="Orded" >
+        select * from t_orded where is_deleted = 0
+        <if test="brand!=null">
+            and brand like concat('%',#{brand},'%',)
+        </if>
+        <if test="user_name!=null">
+            and user_name like concat('%',#{user_name},'%')
+        </if>
+    </select>
+    <!--删除-->
+    <update id="deleteOrded" parameterType="Orded">
+        update t_orded set is_deleted = 1 where order_id in
+        <foreach item="item" collection="ids" index="index" open="(" separator="," close=")">#{item}</foreach>
+    </update>
+    <!--修改-->
+
+    <!--修改用户信息，传进来参数是空地址，则改值不需要修改，动态添加修改值-->
+    <update id="updateOrded" parameterType="Orded">
+        update t_orded
+        <set>
+            <if test="quantity!=null">
+                quantity=#{quantity},
+            </if>
+            <if test="user_name!=null">
+                user_name=#{user_name},
+            </if>
+            <if test="money!=null">
+                money=#{money},
+            </if>
+            <if test="order_time!=null">
+                order_time=#{order_time},
+            </if>
+            <if test="brand!=null">
+                brand=#{brand},
+            </if>
+        </set>
+        where order_id=#{order_id}
+    </update>
+    <!--根据id查询-->
+    <select id="selectPersonById"  resultType="Orded">
+    select * from t_orded where order_id = #{order_id}
+    </select>
+    <!--新增-->
+    <!--新增订单信息-->
+    <insert id="insertOrded" parameterType="Orded">
+        INSERT INTO t_orded(`order_id`,`brand`, `quantity`, `money`, `user_name`, `order_time`,`is_deleted`)
+         VALUES (#{order_id},#{brand},#{quantity},#{money},#{user_name},#{order_time},#{is_deleted})
+    </insert>
+</mapper>

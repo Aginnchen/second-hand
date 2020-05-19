@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dc.dao.CarDao">
+
+    <select id="selectAllCar" resultType="Car" >
+      select * from t_car where is_deleted = 0
+        <if test="brand!=null">
+            and brand like concat('%',#{brand},'%')
+        </if>
+        <if test="configuration!=null">
+            and configuration like concat('%',#{configuration},'%')
+        </if>
+    </select>
+    <!--删除-->
+    <update id="deleteCar" parameterType="Car">
+        update t_car set is_deleted = 1 where brand_id in
+        <foreach item="item" collection="ids" index="index" open="(" separator="," close=")">#{item}</foreach>
+    </update>
+    <!--修改用户信息，传进来参数是空地址，则改值不需要修改，动态添加修改值-->
+    <update id="updateCar" parameterType="Car">
+        update t_car
+        <set>
+            <if test="brand!=null">
+                brand=#{brand},
+            </if>
+            <if test="money!=null">
+                money=#{money},
+            </if>
+            <if test="configuration!=null">
+                configuration=#{configuration},
+            </if>
+            <if test="color!=null">
+                color=#{color},
+            </if>
+            <if test="market_time!=null">
+                market_time=#{market_time},
+            </if>
+            <if test="state!=null">
+                state=#{state},
+            </if>
+            <if test="model!=null">
+                model=#{model},
+            </if>
+        </set>
+        where brand_id=#{brand_id}
+    </update>
+    <!--根据id查询-->
+    <select id="selectPersonById"  resultType="Car">
+    select * from t_car where brand_id = #{brand_id}
+    </select>
+    <!--新增-->
+    <!--新增用户信息-->
+    <insert id="insertCar" parameterType="Car">
+        INSERT INTO t_car(`brand_id`,`brand`, `money`, `model`, `color`, `state`, `configuration`,`is_deleted`)
+         VALUES (#{brand_id},#{brand},#{money},#{model},#{color},#{state},#{configuration},#{is_deleted})
+    </insert>
+</mapper>
