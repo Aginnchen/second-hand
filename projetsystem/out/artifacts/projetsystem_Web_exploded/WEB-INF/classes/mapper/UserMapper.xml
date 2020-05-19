@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dc.dao.UserDao">
+    <!--查询用户登录信息-->
+    <select id="selectLoginUser" parameterType="map" resultType="User">
+        select * from t_user where user_account = #{account} and user_password = #{password}
+
+    </select>
+    <!--注册-->
+    <insert id="addUser" parameterType="map" >
+        insert into t_user (user_account,user_password,user_id,user_name,phone,sex,create_time,is_deleted)
+        value (#{user_account},#{user_password},#{user_id},#{user_name},#{phone},#{sex},#{create_time},#{is_deleted})
+    </insert>
+<!--修改-->
+    <!--修改用户信息，传进来参数是空地址，则改值不需要修改，动态添加修改值-->
+    <update id="updateUser" parameterType="User">
+        update t_user
+        <set>
+        <if test="user_account!=null">
+            user_account=#{user_account},
+        </if>
+
+            <if test="user_name!=null">
+                user_name=#{user_name},
+            </if>
+            <if test="phone!=null">
+                phone=#{phone},
+            </if>
+        </set>
+        where user_id=#{user_id}
+    </update>
+    <!--根据id查询-->
+    <select id="selectPersonById"  resultType="User">
+    select * from t_user where user_id = #{user_id}
+    </select>
+<!--分页查询-->
+    <select id="selectAllUser" resultType="User" >
+        select * from t_user where is_deleted = 0
+        <if test="user_name!=null">
+            and user_name like concat('%',#{user_name},'%')
+        </if>
+        <if test="phone!=null">
+            and phone like concat('%',#{phone},'%')
+        </if>
+    </select>
+    <!--删除-->
+    <update id="deleteUser" parameterType="User">
+        update t_user set is_deleted = 1 where user_id in
+        <foreach item="item" collection="ids" index="index" open="(" separator="," close=")">#{item}</foreach>
+    </update>
+<!--用户新增-->
+
+    <insert id="insertUser" parameterType="User">
+        INSERT INTO t_user(`user_id`,`user_account`, `user_name`, `user_password`, `phone`, `sex`, `is_deleted`,`create_time`)
+         VALUES (#{user_id},#{user_account},#{user_name},#{user_password},#{phone},#{sex},#{create_time},#{is_deleted})
+    </insert>
+    <!--修改-->
+
+    <update id="updateadminUser" parameterType="User">
+        update t_user
+        <set>
+            <if test="user_account!=null">
+                user_account=#{user_account},
+            </if>
+            <if test="user_name!=null">
+                user_name=#{user_name},
+            </if>
+            <if test="user_password!=null">
+                user_password=#{user_password},
+            </if>
+            <if test="phone!=null">
+                phone=#{phone},
+            </if>
+            <if test="sex!=null">
+                sex=#{sex},
+            </if>
+            <if test="create_time!=null">
+                create_time=#{create_time},
+            </if>
+        </set>
+        where user_id=#{user_id}
+    </update>
+
+        </mapper>
